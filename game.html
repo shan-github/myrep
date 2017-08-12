@@ -1,0 +1,114 @@
+<html>
+    <canvas height="600" width="800" id="gc"></canvas>
+    <button id="edit">
+        <b> hello</b>
+    </button>
+    <script>
+        var bsx=5,bsy=5,ballx=400,bally=300;
+        var canvas;
+        var context;
+        var s1=0,s2=0;
+        var p1y=0,p2y=0,deltaY;
+        const ph=100;
+        bt=document.getElementById("edit");
+        window.onload=function()
+        {
+            
+            canvas=document.getElementById("gc");
+            context=canvas.getContext('2d');
+            setInterval(draw,1000/40);
+            canvas.addEventListener('mousemove',function(evt){
+                var mousepos=calculateMousePos(evt);
+                p1y=mousepos.y-ph/2;
+            });
+            //draw();
+        }
+        
+        function calculateMousePos(evt){
+            var rect=canvas.getBoundingClientRect();
+            var root= document.documentElement;
+            var mouseX= evt.clientX - rect.left - root.scrollLeft;
+            var mouseY= evt.clientY - rect.top - root.scrollTop;
+            return{x:mouseX,y:mouseY};
+
+        }
+        
+        function ballReset()
+        {
+             bsx=-bsx;
+            ballx=canvas.width/2;
+            bally=canvas.height/2;        
+        }
+        function Rect(rx,ry,rw,rh,color)
+        {
+            context.fillStyle=color;
+            context.fillRect(rx,ry,rw,rh);
+        }
+        function circle(bx,by,radius,bcolor)
+        {
+            context.fillStyle=bcolor;
+            context.beginPath();
+            context.arc(bx,by,radius,0,2*Math.PI,true);
+            context.fill();
+        }
+        function ai()
+        {
+            if(p2y+ph/2<bally+40)
+                p2y+=6;
+             else if(p2y+ph/2>bally-40)
+                 p2y-=6;
+        }
+        function ballMovement(){
+            ai();
+            ballx+=bsx;
+            bally+=bsy;
+            if(ballx<0)
+                {
+                    if(bally>p1y && bally<p1y+ph)
+                    {
+                        deltaY=bally-(p1y+ph/2);
+                        bsx=-bsx;
+                        bsy=deltaY*0.35;
+                    }
+                   else
+                        {
+                            s2++;
+                            ballReset();
+                        }
+                }   
+            if(ballx>canvas.width)
+                {
+                    if(bally>p2y && bally<p2y+ph)
+                    {
+                        deltaY=bally-(p2y+ph/2);
+                        bsx=-bsx;
+                        bsy=deltaY*0.1;
+                    }
+                    else
+                        {
+                            s1++
+                            ballReset();
+                        }
+                        
+                }   
+            if(bally<0)
+                bsy=-bsy;
+            if(bally>canvas.height)
+                bsy=-bsy;
+            
+        }
+        function draw(){
+            ballMovement();
+            console.log(s1,s2);
+            Rect(0,0,canvas.width,canvas.height,"black");
+            circle(ballx,bally,10,"lime");
+            Rect(canvas.width/2,0,1,canvas.height,"white");
+            Rect(0,p1y,10,ph,"white");
+            Rect(canvas.width-10,p2y,10,ph,"white");
+            context.fillText(s1,100,200);
+            context.fillText(s2,700,200);
+                        
+        }
+    </script>
+</html>
+    
